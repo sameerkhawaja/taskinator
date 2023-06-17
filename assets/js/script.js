@@ -17,6 +17,12 @@ var taskFormHandler = function (event)
     }
 
     formEl.reset();
+    document.querySelector("input[name='task-name']").value = "";
+    document.querySelector("select[name='task-type']").selectedIndex = 0;
+
+
+    var isEdit = formEl.hasAttribute("data-task-id");
+    console.log(isEdit); 
 
     // package up data as an object
     var taskDataObj = {
@@ -39,7 +45,7 @@ var createTaskEl = function (taskDataObj)
     //create div to hold task info and add list item
     var taskInfoEl = document.createElement("div")
     taskInfoEl.className = "task-info"
-    taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + " </span>";
+    taskInfoEl.innerHTML = "<h3 class='task-name'>" + taskDataObj.name + "</h3><span class='task-type'>" + taskDataObj.type + "</span>";
 
     listItemEl.appendChild(taskInfoEl);
 
@@ -95,7 +101,12 @@ var createTaskActions = function (taskId)
 
 var taskButtonHandler = function (event)
 {
-    if (event.target.matches(".delete-btn"))
+
+    if (event.target.matches(".edit-btn")){
+        var taskId = event.target.getAttribute("data-task-id")
+        editTask(taskId);
+    }
+    else if (event.target.matches(".delete-btn"))
     {
         var taskId = event.target.getAttribute("data-task-id")
         deleteTask(taskId);
@@ -106,6 +117,20 @@ var deleteTask = function (taskId)
 {
     var taskSelected = document.querySelector(`.task-item[data-task-id='${taskId}'`)
     taskSelected.remove();
+}
+
+var editTask = function(taskId){
+    var taskSelected = document.querySelector(`.task-item[data-task-id='${taskId}']`);
+    var taskName = taskSelected.querySelector("h3.task-name").textContent;
+    var taskType = taskSelected.querySelector("span.task-type").textContent;
+
+    console.log(taskType)
+
+    document.querySelector("input[name='task-name']").value = taskName;
+    document.querySelector("select[name='task-type']").value = taskType;
+    document.querySelector("#save-task").textContent = "Save Task";
+
+    formEl.setAttribute("data-task-id",taskId)
 }
 
 formEl.addEventListener("submit", taskFormHandler);
